@@ -1,3 +1,8 @@
+/**
+ * File: keeptrack-frontend/src/features/auth/api/auth.api.js
+ */
+
+
 import { apiFetch } from "../../../shared/api/client";
 
 export function login(input) {

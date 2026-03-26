@@ -1,5 +1,7 @@
+// src/app/providers/AuthProvider.jsx
+
 import { createContext, useCallback, useEffect, useState } from "react";
-import { apiFetch } from "../../shared/api/client";
+import { apiFetch } from "../../shared/api/client.js";
 
 export const AuthContext = createContext(null);
 
@@ -14,9 +16,15 @@ export function AuthProvider({ children }) {
     try {
       const response = await apiFetch("/api/auth/me");
 
+      if (!response.ok) {
+        throw new Error("Failed to fetch current session.");
+      }
+
+      const result = await response.json();
+
       setAuth({
         isAuthenticated: true,
-        session: response.payload,
+        session: result.payload,
         isLoading: false,
       });
     } catch {
