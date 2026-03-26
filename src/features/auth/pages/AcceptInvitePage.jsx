@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { acceptInvite } from "../api/auth.api.js";
 import { AuthPageLayout } from "../components/AuthPageLayout.jsx";
 import { AcceptInviteForm } from "../components/AcceptInviteForm.jsx";
+import { getApiErrorMessage } from "../../../shared/utils/apiError.js";
 
 export function AcceptInvitePage() {
   const navigate = useNavigate();
@@ -28,13 +29,16 @@ export function AcceptInvitePage() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result?.error?.message || "Account activeren is mislukt.");
+        throw new Error(
+          getApiErrorMessage(result, "Account activeren is mislukt."),
+        );
       }
 
       navigate("/login", {
         replace: true,
         state: {
-          message: "Je account is geactiveerd. Log nu in met je nieuwe wachtwoord.",
+          message:
+            "Je account is geactiveerd. Log nu in met je nieuwe wachtwoord.",
         },
       });
     } catch (error) {
