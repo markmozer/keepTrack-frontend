@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import { LoginPage } from "../../features/auth/pages/LoginPage";
 import { AcceptInvitePage } from "../../features/auth/pages/AcceptInvitePage";
 import { ForgotPasswordPage } from "../../features/auth/pages/ForgotPasswordPage";

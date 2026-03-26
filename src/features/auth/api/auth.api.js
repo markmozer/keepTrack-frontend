@@ -19,7 +19,7 @@ export function logout() {
 }
 
 export function acceptInvite(input) {
-  return apiFetch("/api/auth/accept-invite", {
+  return apiFetch("/api/users/accept-invite", {
     method: "POST",
     body: JSON.stringify(input),
   });
