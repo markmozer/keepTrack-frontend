@@ -1,8 +1,9 @@
-import { Navigate } from "react-router";
+// src/features/auth/pages/LoginPage.jsx
+
+import { Navigate, useLocation } from "react-router-dom";
 import { AuthPageLayout } from "../components/AuthPageLayout";
 import { LoginForm } from "../components/LoginForm";
 import { useAuth } from "../hooks/useAuth";
-import { useLocation } from "react-router-dom";
 
 export function LoginPage() {
   const { isAuthenticated, isLoading } = useAuth();

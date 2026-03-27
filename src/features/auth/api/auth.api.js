@@ -26,7 +26,7 @@ export function acceptInvite(input) {
 }
 
 export function forgotPassword(input) {
-  return apiFetch("/api/auth/forgot-password", {
+  return apiFetch("/api/users/request-pwd-reset", {
     method: "POST",
     body: JSON.stringify(input),
   });
