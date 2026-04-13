@@ -12,9 +12,9 @@ export function AppHomePage() {
 
         {session ? (
           <>
-            <p><strong>User ID:</strong> {session.userId}</p>
-            <p><strong>Tenant ID:</strong> {session.tenantId}</p>
-            <p><strong>Rollen:</strong> {session.roleNames.join(", ")}</p>
+            <p><strong>User ID:</strong> {session.principal.userId}</p>
+            <p><strong>Tenant ID:</strong> {session.principal.tenantId}</p>
+            <p><strong>Rollen:</strong> {session.principal.roleNames.join(", ")}</p>
           </>
         ) : null}
 
