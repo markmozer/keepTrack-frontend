@@ -33,7 +33,7 @@ export function forgotPassword(input) {
 }
 
 export function resetPassword(input) {
-  return apiFetch("/api/auth/reset-password", {
+  return apiFetch("/api/users/reset-password", {
     method: "POST",
     body: JSON.stringify(input),
   });
