@@ -9,7 +9,7 @@ import { useAuth } from "../hooks/useAuth";
 
 export function LoginForm() {
   const navigate = useNavigate();
-  const { refresh } = useAuth();
+  const { refreshSession } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -39,7 +39,7 @@ export function LoginForm() {
         password: form.password,
       });
 
-      await refresh();
+      await refreshSession();
       navigate("/app", { replace: true });
     } catch (err) {
       setError(getErrorMessage(err));

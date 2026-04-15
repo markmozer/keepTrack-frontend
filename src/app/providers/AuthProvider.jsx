@@ -1,19 +1,25 @@
 // src/app/providers/AuthProvider.jsx
 
-import { createContext, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { apiFetch } from "../../shared/api/client.js";
+import { mapMePayloadToSession } from "../../features/auth/mappers/mapSession.js";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [auth, setAuth] = useState({
-    isAuthenticated: false,
-    session: null,
-    isLoading: true,
-  });
+  const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const refresh = useCallback(async () => {
+  const refreshSession = useCallback(async () => {
     try {
+      setIsLoading(true);
+
       const response = await apiFetch("/api/auth/me");
 
       if (!response.ok) {
@@ -21,42 +27,44 @@ export function AuthProvider({ children }) {
       }
 
       const result = await response.json();
+      const nextSession = mapMePayloadToSession(result.payload);
 
-      setAuth({
-        isAuthenticated: true,
-        session: result.payload,
-        isLoading: false,
-      });
+      setSession(nextSession);
+
+      return nextSession;
     } catch {
-      setAuth({
-        isAuthenticated: false,
-        session: null,
-        isLoading: false,
-      });
+      setSession(null);
+      return null;
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  const clearAuth = useCallback(() => {
-    setAuth({
-      isAuthenticated: false,
-      session: null,
-      isLoading: false,
-    });
+  const clearSession = useCallback(() => {
+    setSession(null);
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    refreshSession();
+  }, [refreshSession]);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        ...auth,
-        refresh,
-        clearAuth,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const value = useMemo(() => {
+    const principal = session?.principal ?? null;
+    const user = session?.user ?? null;
+    const tenant = session?.tenant ?? null;
+
+    return {
+      session,
+      principal,
+      user,
+      tenant,
+      isAuthenticated: Boolean(principal?.userId),
+      isLoading,
+      refreshSession,
+      clearSession,
+    };
+  }, [session, isLoading, refreshSession, clearSession]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

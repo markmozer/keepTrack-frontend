@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import { logout } from "../api/auth.api";
 import { AuthPageLayout } from "../components/AuthPageLayout";
 import { useAuth } from "../hooks/useAuth";
 
 export function LogoutPage() {
-  const { clearAuth, isAuthenticated, isLoading } = useAuth();
+  const { clearSession, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     let isActive = true;
@@ -17,7 +17,7 @@ export function LogoutPage() {
         // Ook als de backend-call faalt, willen we lokaal uitloggen.
       } finally {
         if (isActive) {
-          clearAuth();
+          clearSession();
         }
       }
     }
@@ -27,7 +27,7 @@ export function LogoutPage() {
     return () => {
       isActive = false;
     };
-  }, [clearAuth]);
+  }, [clearSession]);
 
   if (!isLoading && !isAuthenticated) {
     return <Navigate to="/login" replace />;
