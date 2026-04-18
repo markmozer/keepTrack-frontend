@@ -27,5 +27,6 @@ export function mapMePayloadToSession(payload) {
           type: payload.tenant.type,
         }
       : null,
+      abilities: Array.isArray(payload.abilities) ? payload.abilities : [],
   };
 }

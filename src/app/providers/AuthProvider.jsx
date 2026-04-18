@@ -53,12 +53,14 @@ export function AuthProvider({ children }) {
     const principal = session?.principal ?? null;
     const user = session?.user ?? null;
     const tenant = session?.tenant ?? null;
+    const abilities = session?.abilities ?? null;
 
     return {
       session,
       principal,
       user,
       tenant,
+      abilities,
       isAuthenticated: Boolean(principal?.userId),
       isLoading,
       refreshSession,

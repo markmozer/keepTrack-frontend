@@ -12,6 +12,8 @@ import { LogoutPage } from "../../features/auth/pages/LogoutPage";
 import { AcceptInvitePage } from "../../features/auth/pages/AcceptInvitePage";
 import { ForgotPasswordPage } from "../../features/auth/pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "../../features/auth/pages/ResetPasswordPage";
+import { UsersPage } from "../../features/users/pages/UsersPage";
+import { UserDetailPage } from "../../features/users/pages/UserDetailPage";
 
 function PlaceholderPage({ title }) {
   return (
@@ -40,7 +42,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/request-pwd-reset",
+    path: "/forgot-password",
     element: (
       <PublicOnlyRoute>
         <ForgotPasswordPage />
@@ -121,7 +123,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin/users",
-        element: <PlaceholderPage title="Gebruikers" />,
+        element: <UsersPage title="Gebruikers" />,
+      },
+      {
+        path: "admin/users/:userId",
+        element: <UserDetailPage />,
       },
       {
         path: "admin/invitations",

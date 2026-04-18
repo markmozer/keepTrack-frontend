@@ -41,12 +41,13 @@ export const navigation = [
     key: "admin",
     label: "Beheer",
     to: "/app/admin/users",
-    roles: ["ADMIN", "SUPER_ADMIN"],
+    requiredAbilities: ["user:list"],
     children: [
-      { label: "Gebruikers", to: "/app/admin/users" },
-      { label: "Uitnodigingen", to: "/app/admin/invitations" },
-      { label: "Roltoewijzingen", to: "/app/admin/role-assignments" },
-      { label: "Mijn account", to: "/app/admin/account" },
+      {
+        label: "Gebruikers",
+        to: "/app/admin/users",
+        requiredAbilities: ["user:list"],
+      },
     ],
   },
 ];
