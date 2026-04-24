@@ -4,14 +4,19 @@ import { Navigate, useLocation } from "react-router-dom";
 import { AuthPageLayout } from "../components/AuthPageLayout";
 import { LoginForm } from "../components/LoginForm";
 import { useAuth } from "../hooks/useAuth";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
 
 export function LoginPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   const successMessage = location.state?.message || "";
+  const tenantSlug = getTenantSlugFromPathname(location.pathname);
 
   if (!isLoading && isAuthenticated) {
-    return <Navigate to="/app" replace />;
+    return <Navigate to={buildTenantPath(tenantSlug, "app")} replace />;
   }
 
   return (

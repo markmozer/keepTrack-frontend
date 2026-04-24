@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 import { useAuth } from "../features/auth/hooks/useAuth";
+import { buildTenantPath } from "../shared/lib/tenantPaths";
 
 export function AppHomePage() {
-  const { session } = useAuth();
+  const { session, tenant } = useAuth();
 
   return (
     <main className="app-page">
@@ -19,7 +20,7 @@ export function AppHomePage() {
         ) : null}
 
         <p>
-          <Link to="/logout">Uitloggen</Link>
+          <Link to={buildTenantPath(tenant?.slug, "logout")}>Uitloggen</Link>
         </p>
       </div>
     </main>

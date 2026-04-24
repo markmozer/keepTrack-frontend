@@ -7,20 +7,34 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useLocation } from "react-router-dom";
 import { apiFetch } from "../../shared/api/client.js";
 import { mapMePayloadToSession } from "../../features/auth/mappers/mapSession.js";
+import {
+  buildTenantApiPath,
+  getTenantSlugFromPathname,
+} from "../../shared/lib/tenantPaths.js";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const location = useLocation();
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshSession = useCallback(async () => {
+    const tenantSlug = getTenantSlugFromPathname(location.pathname);
+
+    if (!tenantSlug) {
+      setSession(null);
+      setIsLoading(false);
+      return null;
+    }
+
     try {
       setIsLoading(true);
 
-      const response = await apiFetch("/api/auth/me");
+      const response = await apiFetch(buildTenantApiPath(tenantSlug, "auth/me"));
 
       if (!response.ok) {
         throw new Error("Failed to fetch current session.");
@@ -38,7 +52,7 @@ export function AuthProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [location.pathname]);
 
   const clearSession = useCallback(() => {
     setSession(null);

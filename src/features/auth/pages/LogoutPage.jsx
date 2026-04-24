@@ -1,11 +1,17 @@
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { logout } from "../api/auth.api";
 import { AuthPageLayout } from "../components/AuthPageLayout";
 import { useAuth } from "../hooks/useAuth";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
 
 export function LogoutPage() {
   const { clearSession, isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+  const tenantSlug = getTenantSlugFromPathname(location.pathname);
 
   useEffect(() => {
     let isActive = true;
@@ -30,7 +36,7 @@ export function LogoutPage() {
   }, [clearSession]);
 
   if (!isLoading && !isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={buildTenantPath(tenantSlug, "login")} replace />;
   }
 
   return (

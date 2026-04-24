@@ -1,6 +1,20 @@
 // src/features/users/api/users.api.js
 
 import { apiFetch } from "../../../shared/api/client";
+import {
+  buildTenantApiPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
+
+function getCurrentTenantSlug() {
+  const tenantSlug = getTenantSlugFromPathname();
+
+  if (!tenantSlug) {
+    throw new Error("Geen tenant gevonden in de URL.");
+  }
+
+  return tenantSlug;
+}
 
 export async function getUsers({ email = "", status = "" } = {}) {
   const params = new URLSearchParams();
@@ -9,7 +23,8 @@ export async function getUsers({ email = "", status = "" } = {}) {
   if (status) params.set("status", status);
 
   const query = params.toString();
-  const url = query ? `/api/users?${query}` : "/api/users";
+  const baseUrl = buildTenantApiPath(getCurrentTenantSlug(), "users");
+  const url = query ? `${baseUrl}?${query}` : baseUrl;
 
   const response = await apiFetch(url);
 
@@ -25,9 +40,12 @@ export async function getUserById(userId) {
     throw new Error("getUserById requires a userId.");
   }
 
-  const response = await apiFetch(`/api/users/${userId}`, {
-    method: "GET",
-  });
+  const response = await apiFetch(
+    buildTenantApiPath(getCurrentTenantSlug(), `users/${userId}`),
+    {
+      method: "GET",
+    },
+  );
 
   const result = await response.json();
 

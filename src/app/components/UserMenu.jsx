@@ -1,6 +1,7 @@
 // src/app/components/UserMenu.jsx
 
 import { Link } from "react-router-dom";
+import { buildTenantPath } from "../../shared/lib/tenantPaths";
 
 export function UserMenu({ user, tenant }) {
   const displayName = user?.displayName ?? "Onbekende gebruiker";
@@ -16,7 +17,7 @@ export function UserMenu({ user, tenant }) {
         <div className="user-menu__tenant">{tenantLabel}</div>
       </div>
 
-      <Link to="/logout" className="user-menu__logout">
+      <Link to={buildTenantPath(tenant?.slug, "logout")} className="user-menu__logout">
         Logout
       </Link>
     </div>

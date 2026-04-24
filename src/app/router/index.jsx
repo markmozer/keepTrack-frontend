@@ -1,8 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import { AppLayout } from "../layouts/AppLayout";
 import { AppDashboardPage } from "../pages/AppDashboardPage";
 import { ForbiddenPage } from "../pages/ForbiddenPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { AuthProvider } from "../providers/AuthProvider";
 
 import { ProtectedRoute } from "../../features/auth/components/ProtectedRoute";
 import { PublicOnlyRoute } from "../../features/auth/components/PublicOnlyRoute";
@@ -24,131 +25,145 @@ function PlaceholderPage({ title }) {
   );
 }
 
+function RouterRoot() {
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
+}
+
 export const router = createBrowserRouter([
   {
-    path: "/login",
-    element: (
-      <PublicOnlyRoute>
-        <LoginPage />
-      </PublicOnlyRoute>
-    ),
-  },
-  {
-    path: "/accept-invite",
-    element: (
-      <PublicOnlyRoute>
-        <AcceptInvitePage />
-      </PublicOnlyRoute>
-    ),
-  },
-  {
-    path: "/forgot-password",
-    element: (
-      <PublicOnlyRoute>
-        <ForgotPasswordPage />
-      </PublicOnlyRoute>
-    ),
-  },
-  {
-    path: "/reset-password",
-    element: (
-      <PublicOnlyRoute>
-        <ResetPasswordPage />
-      </PublicOnlyRoute>
-    ),
-  },
-  {
-    path: "/logout",
-    element: (
-      <ProtectedRoute>
-        <LogoutPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/app",
-    element: (
-      <ProtectedRoute>
-        <AppLayout />
-      </ProtectedRoute>
-    ),
+    path: "/",
+    element: <RouterRoot />,
     children: [
       {
-        index: true,
-        element: <AppDashboardPage />,
+        path: "/t/:tenantSlug/login",
+        element: (
+          <PublicOnlyRoute>
+            <LoginPage />
+          </PublicOnlyRoute>
+        ),
       },
       {
-        path: "contracts",
-        element: <PlaceholderPage title="Contracten" />,
+        path: "/t/:tenantSlug/accept-invite",
+        element: (
+          <PublicOnlyRoute>
+            <AcceptInvitePage />
+          </PublicOnlyRoute>
+        ),
       },
       {
-        path: "contracts/new",
-        element: <PlaceholderPage title="Nieuw contract" />,
+        path: "/t/:tenantSlug/forgot-password",
+        element: (
+          <PublicOnlyRoute>
+            <ForgotPasswordPage />
+          </PublicOnlyRoute>
+        ),
       },
       {
-        path: "contracts/active",
-        element: <PlaceholderPage title="Actieve contracten" />,
+        path: "/t/:tenantSlug/reset-password",
+        element: (
+          <PublicOnlyRoute>
+            <ResetPasswordPage />
+          </PublicOnlyRoute>
+        ),
       },
       {
-        path: "contracts/closed",
-        element: <PlaceholderPage title="Afgesloten contracten" />,
+        path: "/t/:tenantSlug/logout",
+        element: (
+          <ProtectedRoute>
+            <LogoutPage />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: "time-entries",
-        element: <PlaceholderPage title="Mijn uren" />,
+        path: "/t/:tenantSlug/app",
+        element: (
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: <AppDashboardPage />,
+          },
+          {
+            path: "contracts",
+            element: <PlaceholderPage title="Contracten" />,
+          },
+          {
+            path: "contracts/new",
+            element: <PlaceholderPage title="Nieuw contract" />,
+          },
+          {
+            path: "contracts/active",
+            element: <PlaceholderPage title="Actieve contracten" />,
+          },
+          {
+            path: "contracts/closed",
+            element: <PlaceholderPage title="Afgesloten contracten" />,
+          },
+          {
+            path: "time-entries",
+            element: <PlaceholderPage title="Mijn uren" />,
+          },
+          {
+            path: "time-entries/new",
+            element: <PlaceholderPage title="Nieuwe urenboeking" />,
+          },
+          {
+            path: "time-entries/approvals",
+            element: <PlaceholderPage title="Uren goedkeuren" />,
+          },
+          {
+            path: "invoices",
+            element: <PlaceholderPage title="Facturen" />,
+          },
+          {
+            path: "invoices/drafts",
+            element: <PlaceholderPage title="Conceptfacturen" />,
+          },
+          {
+            path: "invoices/sent",
+            element: <PlaceholderPage title="Verzonden facturen" />,
+          },
+          {
+            path: "invoices/paid",
+            element: <PlaceholderPage title="Betaalde facturen" />,
+          },
+          {
+            path: "admin/users",
+            element: <UsersPage />,
+          },
+          {
+            path: "admin/users/:userId",
+            element: <UserDetailPage />,
+          },
+          {
+            path: "admin/invitations",
+            element: <PlaceholderPage title="Uitnodigingen" />,
+          },
+          {
+            path: "admin/role-assignments",
+            element: <PlaceholderPage title="Roltoewijzingen" />,
+          },
+          {
+            path: "admin/account",
+            element: <PlaceholderPage title="Mijn account" />,
+          },
+        ],
       },
       {
-        path: "time-entries/new",
-        element: <PlaceholderPage title="Nieuwe urenboeking" />,
+        path: "/t/:tenantSlug/403",
+        element: <ForbiddenPage />,
       },
       {
-        path: "time-entries/approvals",
-        element: <PlaceholderPage title="Uren goedkeuren" />,
-      },
-      {
-        path: "invoices",
-        element: <PlaceholderPage title="Facturen" />,
-      },
-      {
-        path: "invoices/drafts",
-        element: <PlaceholderPage title="Conceptfacturen" />,
-      },
-      {
-        path: "invoices/sent",
-        element: <PlaceholderPage title="Verzonden facturen" />,
-      },
-      {
-        path: "invoices/paid",
-        element: <PlaceholderPage title="Betaalde facturen" />,
-      },
-      {
-        path: "admin/users",
-        element: <UsersPage title="Gebruikers" />,
-      },
-      {
-        path: "admin/users/:userId",
-        element: <UserDetailPage />,
-      },
-      {
-        path: "admin/invitations",
-        element: <PlaceholderPage title="Uitnodigingen" />,
-      },
-      {
-        path: "admin/role-assignments",
-        element: <PlaceholderPage title="Roltoewijzingen" />,
-      },
-      {
-        path: "admin/account",
-        element: <PlaceholderPage title="Mijn account" />,
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
-  },
-  {
-    path: "/403",
-    element: <ForbiddenPage />,
-  },
-  {
-    path: "*",
-    element: <NotFoundPage />,
   },
 ]);

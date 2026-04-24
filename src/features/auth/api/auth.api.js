@@ -2,39 +2,61 @@
  * File: keeptrack-frontend/src/features/auth/api/auth.api.js
  */
 
-
 import { apiFetch } from "../../../shared/api/client";
+import {
+  buildTenantApiPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
+
+function getCurrentTenantSlug() {
+  const tenantSlug = getTenantSlugFromPathname();
+
+  if (!tenantSlug) {
+    throw new Error("Geen tenant gevonden in de URL.");
+  }
+
+  return tenantSlug;
+}
 
 export function login(input) {
-  return apiFetch("/api/auth/login", {
+  return apiFetch(buildTenantApiPath(getCurrentTenantSlug(), "auth/login"), {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
 export function logout() {
-  return apiFetch("/api/auth/logout", {
+  return apiFetch(buildTenantApiPath(getCurrentTenantSlug(), "auth/logout"), {
     method: "POST",
   });
 }
 
 export function acceptInvite(input) {
-  return apiFetch("/api/users/accept-invite", {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
+  return apiFetch(
+    buildTenantApiPath(getCurrentTenantSlug(), "auth/accept-invite"),
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
 }
 
 export function forgotPassword(input) {
-  return apiFetch("/api/users/request-pwd-reset", {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
+  return apiFetch(
+    buildTenantApiPath(getCurrentTenantSlug(), "auth/forgot-password"),
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
 }
 
 export function resetPassword(input) {
-  return apiFetch("/api/users/reset-password", {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
+  return apiFetch(
+    buildTenantApiPath(getCurrentTenantSlug(), "auth/reset-password"),
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
 }

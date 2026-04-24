@@ -6,10 +6,15 @@ import { Button } from "../../../shared/components/Button";
 import { FormError } from "../../../shared/components/FormError";
 import { getErrorMessage } from "../../../shared/utils/errors";
 import { useAuth } from "../hooks/useAuth";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
 
 export function LoginForm() {
   const navigate = useNavigate();
   const { refreshSession } = useAuth();
+  const tenantSlug = getTenantSlugFromPathname();
 
   const [form, setForm] = useState({
     email: "",
@@ -40,7 +45,7 @@ export function LoginForm() {
       });
 
       await refreshSession();
-      navigate("/app", { replace: true });
+      navigate(buildTenantPath(tenantSlug, "app"), { replace: true });
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -81,7 +86,9 @@ export function LoginForm() {
       </Button>
 
       <p className="auth-form__footer">
-        <Link to="/forgot-password">Wachtwoord vergeten?</Link>
+        <Link to={buildTenantPath(tenantSlug, "forgot-password")}>
+          Wachtwoord vergeten?
+        </Link>
       </p>
     </form>
   );

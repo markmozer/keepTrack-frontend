@@ -10,7 +10,7 @@ export function TopNav({ items }) {
           <NavLink
             key={item.key}
             to={item.to}
-            end={item.to === "/app"}
+            end={item.to.endsWith("/app")}
             className={({ isActive }) =>
               isActive ? "top-nav__link top-nav__link--active" : "top-nav__link"
             }

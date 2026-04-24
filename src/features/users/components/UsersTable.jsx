@@ -3,6 +3,10 @@
 import { Link } from "react-router-dom";
 import { DataTable } from "../../../shared/components/DataTable";
 import { StatusBadge } from "../../../shared/components/StatusBadge";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
 
 function getStatusVariant(status) {
   switch (status) {
@@ -18,6 +22,7 @@ function getStatusVariant(status) {
 }
 
 export function UsersTable({ users }) {
+  const tenantSlug = getTenantSlugFromPathname();
   const columns = [
     {
       key: "email",
@@ -41,7 +46,7 @@ export function UsersTable({ users }) {
       key: "actions",
       header: "",
       render: (user) => (
-        <Link to={`/app/admin/users/${user.id}`} className="table-link">
+        <Link to={buildTenantPath(tenantSlug, `app/admin/users/${user.id}`)} className="table-link">
           Bekijken
         </Link>
       ),

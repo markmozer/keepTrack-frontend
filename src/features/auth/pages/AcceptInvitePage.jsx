@@ -1,15 +1,21 @@
 // src/features/auth/pages/AcceptInvitePage.jsx
 
 import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { acceptInvite } from "../api/auth.api.js";
 import { AuthPageLayout } from "../components/AuthPageLayout.jsx";
 import { AcceptInviteForm } from "../components/AcceptInviteForm.jsx";
 import { getApiErrorMessage } from "../../../shared/utils/apiError.js";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths.js";
 
 export function AcceptInvitePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
+  const tenantSlug = getTenantSlugFromPathname(location.pathname);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -34,7 +40,7 @@ export function AcceptInvitePage() {
         );
       }
 
-      navigate("/login", {
+      navigate(buildTenantPath(tenantSlug, "login"), {
         replace: true,
         state: {
           message:

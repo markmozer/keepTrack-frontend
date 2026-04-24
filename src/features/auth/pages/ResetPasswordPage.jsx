@@ -1,15 +1,21 @@
 // src/features/auth/pages/ResetPasswordPage.jsx
 
 import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { acceptInvite, resetPassword } from "../api/auth.api.js";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { resetPassword } from "../api/auth.api.js";
 import { AuthPageLayout } from "../components/AuthPageLayout.jsx";
 import { ResetPasswordForm } from "../components/ResetPasswordForm.jsx";
 import { getApiErrorMessage } from "../../../shared/utils/apiError.js";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths.js";
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
+  const tenantSlug = getTenantSlugFromPathname(location.pathname);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -34,7 +40,7 @@ export function ResetPasswordPage() {
         );
       }
 
-      navigate("/login", {
+      navigate(buildTenantPath(tenantSlug, "login"), {
         replace: true,
         state: {
           message:

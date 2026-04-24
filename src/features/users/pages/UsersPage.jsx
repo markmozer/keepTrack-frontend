@@ -9,8 +9,13 @@ import { DataTableToolbar } from "../../../shared/components/DataTableToolbar";
 import { UsersFilters } from "../components/UsersFilters";
 import { UsersTable } from "../components/UsersTable";
 import { getUsers } from "../api/users.api";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
 
 export function UsersPage() {
+  const tenantSlug = getTenantSlugFromPathname();
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     email: "",
@@ -47,7 +52,7 @@ export function UsersPage() {
         title="Gebruikers"
         subtitle="Beheer gebruikers binnen deze tenant."
         actions={
-          <Button as={Link} to="/app/admin/users/new">
+          <Button as={Link} to={buildTenantPath(tenantSlug, "app/admin/users/new")}>
             Nieuwe gebruiker
           </Button>
         }
