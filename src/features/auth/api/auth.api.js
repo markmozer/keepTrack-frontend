@@ -7,6 +7,7 @@ import {
   buildTenantApiPath,
   getTenantSlugFromPathname,
 } from "../../../shared/lib/tenantPaths";
+import { getApiErrorMessage } from "../../../shared/utils/apiError.js";
 
 function getCurrentTenantSlug() {
   const tenantSlug = getTenantSlugFromPathname();
@@ -59,4 +60,55 @@ export function resetPassword(input) {
       body: JSON.stringify(input),
     },
   );
+}
+
+function formatActivationDate(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("nl-NL", {
+    dateStyle: "long",
+    timeStyle: "short",
+  }).format(date);
+}
+
+export async function loginWithResult(input) {
+  const response = await login(input);
+  const result = await response.json();
+
+  if (!response.ok || !result?.success) {
+    const nextValidFrom = result?.error?.details?.nextValidFrom;
+    const formattedDate = formatActivationDate(nextValidFrom);
+
+    if (result?.error?.code === "ROLES_NOT_YET_ACTIVE" && formattedDate) {
+      const error = new Error(
+        `Je account is al geactiveerd, maar je toegang start op ${formattedDate}. Daarna kun je inloggen.`,
+      );
+      error.code = "ROLES_NOT_YET_ACTIVE";
+      error.nextValidFrom = nextValidFrom;
+      throw error;
+    }
+
+    if (result?.error?.code === "ROLES_NOT_YET_ACTIVE") {
+      const error = new Error(
+        "Je account is al geactiveerd, maar je toegang is nog niet actief. Probeer het later opnieuw.",
+      );
+      error.code = "ROLES_NOT_YET_ACTIVE";
+      error.nextValidFrom = nextValidFrom ?? null;
+      throw error;
+    }
+
+    throw new Error(
+      getApiErrorMessage(result, "Inloggen is mislukt."),
+    );
+  }
+
+  return result;
 }

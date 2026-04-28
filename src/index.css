@@ -231,6 +231,15 @@ a {
   margin: 0;
 }
 
+.form-notice {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
 .auth-form__footer {
   margin: 0;
   font-size: 0.95rem;

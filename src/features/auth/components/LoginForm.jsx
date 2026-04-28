@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../api/auth.api";
+import { loginWithResult } from "../api/auth.api";
 import { Input } from "../../../shared/components/Input";
 import { Button } from "../../../shared/components/Button";
 import { FormError } from "../../../shared/components/FormError";
@@ -21,6 +21,7 @@ export function LoginForm() {
     password: "",
   });
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleChange(event) {
@@ -30,16 +31,20 @@ export function LoginForm() {
       ...prev,
       [name]: value,
     }));
+
+    setError("");
+    setNotice("");
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
     setError("");
+    setNotice("");
     setIsSubmitting(true);
 
     try {
-      await login({
+      await loginWithResult({
         email: form.email,
         password: form.password,
       });
@@ -47,6 +52,11 @@ export function LoginForm() {
       await refreshSession();
       navigate(buildTenantPath(tenantSlug, "app"), { replace: true });
     } catch (err) {
+      if (err?.code === "ROLES_NOT_YET_ACTIVE") {
+        setNotice(getErrorMessage(err));
+        return;
+      }
+
       setError(getErrorMessage(err));
     } finally {
       setIsSubmitting(false);
@@ -79,6 +89,7 @@ export function LoginForm() {
         />
       </label>
 
+      {notice ? <p className="form-notice">{notice}</p> : null}
       <FormError message={error} />
 
       <Button type="submit" disabled={isSubmitting}>

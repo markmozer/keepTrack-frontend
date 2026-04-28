@@ -1,16 +1,92 @@
-# React + Vite
+# keepTrack Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+De frontend van de keepTrack applicatie, gebouwd met React en Vite.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React
+- React Router
+- Vite
 
-## React Compiler
+## Routingmodel
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+De frontend gebruikt path-based tenant routing.
 
-## Expanding the ESLint configuration
+Voorbeelden:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `/t/:tenantSlug/login`
+- `/t/:tenantSlug/accept-invite`
+- `/t/:tenantSlug/forgot-password`
+- `/t/:tenantSlug/reset-password`
+- `/t/:tenantSlug/app`
+- `/t/:tenantSlug/app/admin/users`
+
+De frontend leest de tenant uit het pad en roept de backend tenant-aware aan via:
+
+- `/api/t/:tenantSlug/auth/...`
+- `/api/t/:tenantSlug/users/...`
+- `/api/t/:tenantSlug/roles`
+- `/api/t/:tenantSlug/role-assignments`
+
+## Lokale ontwikkeling
+
+### Installeren
+
+```bash
+npm install
+```
+
+### Development server starten
+
+```bash
+npm run dev
+```
+
+Vite draait standaard op `http://localhost:5173`.
+
+### Lokale backend-koppeling
+
+Lokaal mag `VITE_API_BASE_URL` leeg zijn:
+
+```env
+VITE_API_BASE_URL=
+```
+
+Dan gebruikt de frontend dezelfde origin en proxiet Vite `/api` door naar de backend op `http://localhost:3000`.
+
+De Vite proxy zit in [vite.config.js](./vite.config.js).
+
+Voorbeeld lokaal:
+
+- frontend: `http://localhost:5173/t/mozer-consulting/login`
+- backend: `http://localhost:3000`
+
+## Productie / Render
+
+De productie-opzet is:
+
+- frontend: `https://keeptrackonline.nl`
+- backend: `https://api.keeptrackonline.nl`
+
+### Frontend env var
+
+In Render voor de frontend:
+
+```env
+VITE_API_BASE_URL=https://api.keeptrackonline.nl
+```
+
+Dat zorgt ervoor dat alle API-calls direct naar je eigen API-subdomein gaan.
+
+## Build
+
+```bash
+npm run build
+```
+
+## Belangrijke notities
+
+- De frontend gebruikt geen subdomains of `X-Tenant-Slug` meer
+- De tenant komt volledig uit het URL-pad
+- Redirects en navigatie behouden automatisch de actieve tenant
+- Auth werkt met cookies en `credentials: "include"`
