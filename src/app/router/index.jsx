@@ -13,6 +13,8 @@ import { LogoutPage } from "../../features/auth/pages/LogoutPage";
 import { AcceptInvitePage } from "../../features/auth/pages/AcceptInvitePage";
 import { ForgotPasswordPage } from "../../features/auth/pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "../../features/auth/pages/ResetPasswordPage";
+import { CreateRoleAssignmentPage } from "../../features/roleAssignments/pages/CreateRoleAssignmentPage";
+import { CreateUserPage } from "../../features/users/pages/CreateUserPage";
 import { UsersPage } from "../../features/users/pages/UsersPage";
 import { UserDetailPage } from "../../features/users/pages/UserDetailPage";
 
@@ -139,6 +141,10 @@ export const router = createBrowserRouter([
             element: <UsersPage />,
           },
           {
+            path: "admin/users/new",
+            element: <CreateUserPage />,
+          },
+          {
             path: "admin/users/:userId",
             element: <UserDetailPage />,
           },
@@ -148,7 +154,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "admin/role-assignments",
-            element: <PlaceholderPage title="Roltoewijzingen" />,
+            element: <CreateRoleAssignmentPage />,
           },
           {
             path: "admin/account",

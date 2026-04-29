@@ -148,6 +148,17 @@ a {
   gap: 16px;
 }
 
+.page-header__actions {
+  display: flex;
+  align-items: flex-end;
+}
+
+.page-header__actions-group {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
 .page-header__title {
   margin: 0;
   font-size: 2rem;
@@ -156,6 +167,14 @@ a {
 .page-header__subtitle {
   margin: 8px 0 0;
   color: var(--color-muted);
+}
+
+.page-header__hint {
+  margin: 0;
+  max-width: 320px;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  text-align: right;
 }
 
 .page-card,
@@ -191,6 +210,12 @@ a {
 .auth-form {
   display: grid;
   gap: 16px;
+}
+
+.user-form {
+  display: grid;
+  gap: 16px;
+  max-width: 520px;
 }
 
 .form-field {
@@ -243,6 +268,18 @@ a {
 .auth-form__footer {
   margin: 0;
   font-size: 0.95rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form-help {
+  color: var(--color-muted);
+  font-size: 0.9rem;
 }
 
 .field-group {
@@ -430,6 +467,29 @@ a {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 1.1rem;
+}
+
+.section-header {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+.section-hint {
+  margin: 0 0 16px;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  display: grid;
+  gap: 16px;
 }
 
 @media (max-width: 900px) {

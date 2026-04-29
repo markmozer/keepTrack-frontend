@@ -1,7 +1,7 @@
 // src/features/users/pages/UsersPage.jsx
 
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { PageHeader } from "../../../app/components/PageHeader";
 import { PageCard } from "../../../shared/components/PageCard";
 import { Button } from "../../../shared/components/Button";
@@ -9,13 +9,19 @@ import { DataTableToolbar } from "../../../shared/components/DataTableToolbar";
 import { UsersFilters } from "../components/UsersFilters";
 import { UsersTable } from "../components/UsersTable";
 import { getUsers } from "../api/users.api";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { can } from "../../../shared/lib/abilities";
 import {
   buildTenantPath,
   getTenantSlugFromPathname,
 } from "../../../shared/lib/tenantPaths";
 
 export function UsersPage() {
+  const location = useLocation();
+  const { abilities } = useAuth();
   const tenantSlug = getTenantSlugFromPathname();
+  const canCreateUser = can(abilities, "user:create");
+  const successMessage = location.state?.message || "";
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     email: "",
@@ -52,13 +58,36 @@ export function UsersPage() {
         title="Gebruikers"
         subtitle="Beheer gebruikers binnen deze tenant."
         actions={
-          <Button as={Link} to={buildTenantPath(tenantSlug, "app/admin/users/new")}>
-            Nieuwe gebruiker
-          </Button>
+          <div className="page-header__actions-group">
+            {canCreateUser ? (
+              <Button
+                as={Link}
+                to={buildTenantPath(tenantSlug, "app/admin/users/new")}
+              >
+                Nieuwe gebruiker
+              </Button>
+            ) : (
+              <Button
+                disabled
+                title="Je hebt geen rechten om gebruikers aan te maken."
+                aria-describedby="create-user-help"
+              >
+                Nieuwe gebruiker
+              </Button>
+            )}
+
+            {!canCreateUser ? (
+              <p id="create-user-help" className="page-header__hint">
+                Je kunt pas gebruikers aanmaken als je rol deze actie toestaat.
+              </p>
+            ) : null}
+          </div>
         }
       />
 
       <PageCard>
+        {successMessage ? <p className="form-success">{successMessage}</p> : null}
+
         <DataTableToolbar
           filters={
             <UsersFilters

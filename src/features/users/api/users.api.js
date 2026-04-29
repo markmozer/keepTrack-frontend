@@ -1,6 +1,7 @@
 // src/features/users/api/users.api.js
 
 import { apiFetch } from "../../../shared/api/client";
+import { getApiErrorMessage } from "../../../shared/utils/apiError";
 import {
   buildTenantApiPath,
   getTenantSlugFromPathname,
@@ -51,6 +52,23 @@ export async function getUserById(userId) {
 
   if (!response.ok) {
     throw new Error(result?.error?.message || "Failed to fetch user.");
+  }
+
+  return result;
+}
+
+export async function createUser(input) {
+  const response = await apiFetch(buildTenantApiPath(getCurrentTenantSlug(), "users"), {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result?.success) {
+    throw new Error(
+      getApiErrorMessage(result, "Gebruiker aanmaken is mislukt."),
+    );
   }
 
   return result;

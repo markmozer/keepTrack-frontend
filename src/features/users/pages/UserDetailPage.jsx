@@ -1,11 +1,18 @@
 // src/features/users/pages/UserDetailPage.jsx
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { PageHeader } from "../../../app/components/PageHeader";
 import { PageCard } from "../../../shared/components/PageCard";
+import { Button } from "../../../shared/components/Button";
 import { StatusBadge } from "../../../shared/components/StatusBadge";
+import { useAuth } from "../../auth/hooks/useAuth";
 import { getUserById } from "../api/users.api";
+import { can } from "../../../shared/lib/abilities";
+import {
+  buildTenantPath,
+  getTenantSlugFromPathname,
+} from "../../../shared/lib/tenantPaths";
 
 function getStatusVariant(status) {
   switch (status) {
@@ -74,7 +81,12 @@ function UserRolesTable({ userRoles }) {
 }
 
 export function UserDetailPage() {
+  const { abilities } = useAuth();
+  const location = useLocation();
   const { userId } = useParams();
+  const tenantSlug = getTenantSlugFromPathname();
+  const canCreateRoleAssignment = can(abilities, "roleAssignment:create");
+  const successMessage = location.state?.message || "";
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
@@ -145,12 +157,25 @@ export function UserDetailPage() {
     );
   }
 
+  const roleAssignmentsPath = `${buildTenantPath(
+    tenantSlug,
+    "app/admin/role-assignments",
+  )}?userId=${encodeURIComponent(user.id)}`;
+
   return (
     <>
       <PageHeader
         title="Gebruiker"
         subtitle={user.email}
       />
+
+      {successMessage ? (
+        <section className="page-section">
+          <PageCard>
+            <p className="form-success">{successMessage}</p>
+          </PageCard>
+        </section>
+      ) : null}
 
       <section className="page-section">
         <PageCard>
@@ -174,7 +199,29 @@ export function UserDetailPage() {
 
       <section className="page-section">
         <PageCard>
-          <h2>Roltoewijzingen</h2>
+          <div className="section-header">
+            <h2>Roltoewijzingen</h2>
+
+            {canCreateRoleAssignment ? (
+              <Button as={Link} to={roleAssignmentsPath}>
+                Rol toevoegen
+              </Button>
+            ) : (
+              <Button
+                disabled
+                title="Je hebt geen rechten om een roltoewijzing toe te voegen."
+              >
+                Rol toevoegen
+              </Button>
+            )}
+          </div>
+
+          {!canCreateRoleAssignment ? (
+            <p className="section-hint">
+              Je kunt alleen een rol toevoegen als je rol deze actie toestaat.
+            </p>
+          ) : null}
+
           <UserRolesTable userRoles={user.userRoles} />
         </PageCard>
       </section>
