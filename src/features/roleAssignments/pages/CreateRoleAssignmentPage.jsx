@@ -125,8 +125,7 @@ export function CreateRoleAssignmentPage() {
     setIsSubmitting(true);
 
     try {
-      await createRoleAssignment({
-        targetUserId,
+      await createRoleAssignment(targetUserId, {
         roleId: form.roleId,
         validFrom: form.validFrom || undefined,
         validTo: form.validTo || undefined,

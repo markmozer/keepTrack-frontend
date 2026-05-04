@@ -26,9 +26,12 @@ export async function getRoles() {
   return result;
 }
 
-export async function createRoleAssignment(input) {
+export async function createRoleAssignment(userId, input) {
   const response = await apiFetch(
-    buildTenantApiPath(getCurrentTenantSlug(), "role-assignments"),
+    buildTenantApiPath(
+      getCurrentTenantSlug(),
+      `users/${userId}/role-assignments`,
+    ),
     {
       method: "POST",
       body: JSON.stringify(input),
