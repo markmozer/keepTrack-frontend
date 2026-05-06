@@ -6,9 +6,8 @@ import { PageHeader } from "../../../app/components/PageHeader";
 import { PageCard } from "../../../shared/components/PageCard";
 import { Button } from "../../../shared/components/Button";
 import { StatusBadge } from "../../../shared/components/StatusBadge";
-import { useAuth } from "../../auth/hooks/useAuth";
-import { getUserById } from "../api/users.api";
-import { can } from "../../../shared/lib/abilities";
+import { FormError } from "../../../shared/components/FormError";
+import { getUserById, inviteUser } from "../api/users.api";
 import {
   buildTenantPath,
   getTenantSlugFromPathname,
@@ -40,6 +39,14 @@ function formatDateTime(value) {
     dateStyle: "short",
     timeStyle: "short",
   }).format(date);
+}
+
+function getActionTooltip(actionDecision, fallbackText) {
+  if (actionDecision?.allowed) {
+    return undefined;
+  }
+
+  return actionDecision?.reason || fallbackText;
 }
 
 function Field({ label, value }) {
@@ -81,16 +88,17 @@ function UserRolesTable({ userRoles }) {
 }
 
 export function UserDetailPage() {
-  const { abilities } = useAuth();
   const location = useLocation();
   const { userId } = useParams();
   const tenantSlug = getTenantSlugFromPathname();
-  const canCreateRoleAssignment = can(abilities, "roleAssignment:create");
-  const successMessage = location.state?.message || "";
+  const initialMessage = location.state?.message || "";
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isInviting, setIsInviting] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [message, setMessage] = useState(initialMessage);
 
   useEffect(() => {
     let isActive = true;
@@ -157,10 +165,42 @@ export function UserDetailPage() {
     );
   }
 
+  const canInviteUser = user.availableActions?.inviteUser?.allowed === true;
+  const canCreateRoleAssignment =
+    user.availableActions?.createRoleAssignment?.allowed === true;
+  const inviteTooltip = getActionTooltip(
+    user.availableActions?.inviteUser,
+    "Deze gebruiker kan op dit moment niet worden uitgenodigd.",
+  );
+  const createRoleAssignmentTooltip = getActionTooltip(
+    user.availableActions?.createRoleAssignment,
+    "Je kunt op dit moment geen roltoewijzing toevoegen.",
+  );
   const roleAssignmentsPath = `${buildTenantPath(
     tenantSlug,
     "app/admin/role-assignments",
   )}?userId=${encodeURIComponent(user.id)}`;
+
+  async function handleInviteUser() {
+    setActionError("");
+    setMessage("");
+    setIsInviting(true);
+
+    try {
+      const result = await inviteUser(user.id);
+      const invitedUser = result?.payload;
+
+      if (invitedUser) {
+        setUser(invitedUser);
+      }
+
+      setMessage(`Uitnodiging verstuurd naar ${user.email}.`);
+    } catch (err) {
+      setActionError(err?.message || "Gebruiker uitnodigen is mislukt.");
+    } finally {
+      setIsInviting(false);
+    }
+  }
 
   return (
     <>
@@ -169,10 +209,10 @@ export function UserDetailPage() {
         subtitle={user.email}
       />
 
-      {successMessage ? (
+      {message ? (
         <section className="page-section">
           <PageCard>
-            <p className="form-success">{successMessage}</p>
+            <p className="form-success">{message}</p>
           </PageCard>
         </section>
       ) : null}
@@ -194,6 +234,23 @@ export function UserDetailPage() {
             <Field label="User ID" value={user.id} />
             <Field label="Tenant ID" value={user.tenantId} />
           </div>
+
+          <div className="section-header">
+            {canInviteUser ? (
+              <Button onClick={handleInviteUser} disabled={isInviting}>
+                {isInviting ? "Bezig..." : "Uitnodigen"}
+              </Button>
+            ) : (
+              <Button
+                disabled
+                title={inviteTooltip}
+              >
+                Uitnodigen
+              </Button>
+            )}
+          </div>
+
+          <FormError message={actionError} />
         </PageCard>
       </section>
 
@@ -209,18 +266,12 @@ export function UserDetailPage() {
             ) : (
               <Button
                 disabled
-                title="Je hebt geen rechten om een roltoewijzing toe te voegen."
+                title={createRoleAssignmentTooltip}
               >
                 Rol toevoegen
               </Button>
             )}
           </div>
-
-          {!canCreateRoleAssignment ? (
-            <p className="section-hint">
-              Je kunt alleen een rol toevoegen als je rol deze actie toestaat.
-            </p>
-          ) : null}
 
           <UserRolesTable userRoles={user.userRoles} />
         </PageCard>

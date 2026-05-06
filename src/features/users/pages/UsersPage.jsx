@@ -70,17 +70,10 @@ export function UsersPage() {
               <Button
                 disabled
                 title="Je hebt geen rechten om gebruikers aan te maken."
-                aria-describedby="create-user-help"
               >
                 Nieuwe gebruiker
               </Button>
             )}
-
-            {!canCreateUser ? (
-              <p id="create-user-help" className="page-header__hint">
-                Je kunt pas gebruikers aanmaken als je rol deze actie toestaat.
-              </p>
-            ) : null}
           </div>
         }
       />

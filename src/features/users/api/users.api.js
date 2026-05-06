@@ -73,3 +73,26 @@ export async function createUser(input) {
 
   return result;
 }
+
+export async function inviteUser(userId) {
+  if (!userId) {
+    throw new Error("inviteUser requires a userId.");
+  }
+
+  const response = await apiFetch(
+    buildTenantApiPath(getCurrentTenantSlug(), `users/${userId}/invite`),
+    {
+      method: "POST",
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || !result?.success) {
+    throw new Error(
+      getApiErrorMessage(result, "Gebruiker uitnodigen is mislukt."),
+    );
+  }
+
+  return result;
+}
